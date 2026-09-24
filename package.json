@@ -4,12 +4,14 @@
   "description": "Playwright checks for price blocks on promotion pages",
   "scripts": {
     "config": "node scripts/build-config.mjs",
+    "preflight": "node scripts/preflight.mjs",
     "pretest": "npm run config",
     "test": "playwright test",
     "test:desktop": "npm run config && playwright test --project=desktop",
-    "test:selftest": "PRICE_CONFIG=config/selftest.json playwright test",
-    "discover": "DISCOVER=1 playwright test tests/discover.spec.ts --project=desktop",
+    "test:selftest": "cross-env PRICE_CONFIG=config/selftest.json playwright test",
+    "discover": "cross-env DISCOVER=1 playwright test tests/discover.spec.ts --project=desktop",
     "report": "playwright show-report",
+    "report:summary": "node scripts/build-report.mjs",
     "typecheck": "tsc --noEmit"
   },
   "repository": {
@@ -23,7 +25,11 @@
   "devDependencies": {
     "@playwright/test": "^1.56.1",
     "@types/node": "^26.6.2",
+    "cross-env": "^10.1.0",
     "typescript": "^7.0.2"
   },
-  "private": true
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  }
 }

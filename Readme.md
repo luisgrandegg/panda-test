@@ -8,25 +8,40 @@ Playwright checks for Panda promotion pages. For every URL in the config it chec
 
 Every page runs twice, on a **desktop** viewport (1366×768) and a **mobile** one (Pixel 7), because the fold depends on screen size.
 
-## Setup
+## Setup (Windows)
 
-```bash
-npm install
-npx playwright install chromium
-```
+1. Clone this repository and open Claude Code in its folder.
+2. Ask Claude to **"set up this computer for the price tests"** (the `onboarding` skill). It checks what's installed, then, with your OK, installs:
+   - Node.js LTS (through `winget`)
+   - the npm packages (`npm ci`)
+   - Playwright's Chromium
+
+   It finishes by running the preflight and the offline self-test.
+
+Manual setup: install Node.js 20+ LTS, then run `npm ci` and `npx playwright install chromium`.
 
 ## Running
 
+The easiest way: ask Claude to **"run the price tests"**. The `price-test-runner` agent (`.claude/agents/`):
+1. Runs the preflight. If something is missing it stops, and says which skill fixes it.
+2. Runs the whole suite.
+3. Writes `reports/<date_time>/report.html`: a self-contained page with an executive summary, results per page and viewport, the issues in plain language, and the evidence (first-price screenshots, every price with a picture of its card, failure screenshots). Where claude.ai Artifacts are available, it also publishes the report as a private Artifact.
+
+By hand:
+
 ```bash
+npm run preflight               # Node, packages, browser, config, pages reachable (--offline skips the last)
 npm run config                  # build config/pages.json from the marketing CSVs
 node scripts/build-config.mjs --pages a.csv --prices b.csv --check   # validate other CSVs
 npm test                        # build the config, then test desktop + mobile
 npm run test:desktop            # desktop only
-PRICE_CONFIG=config/other.json npx playwright test   # a hand-written config
+npm run report:summary          # executive HTML report of the last run, in reports/
+npm run report                  # Playwright's technical report (traces, steps)
 npm run discover                # list the blocks found on each page (checks nothing)
-npm run test:selftest           # run the suite against the local fixture page
-npm run report                  # open the HTML report (screenshots, traces)
+npm run test:selftest           # the suite against local copies of the page, no internet needed
 ```
+
+To run a hand-written config: `PRICE_CONFIG=config/other.json npx playwright test` (in PowerShell: `$env:PRICE_CONFIG="config/other.json"; npx playwright test`).
 
 ## Config
 

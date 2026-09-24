@@ -92,7 +92,8 @@ function fail(msg: string): never {
 function resolveUrl(url: string): string {
   // Relative paths point at local files next to the config (used by the self-test fixtures).
   if (url.startsWith('./') || url.startsWith('../')) {
-    return pathToFileURL(path.resolve(path.dirname(CONFIG_PATH), url)).href;
+    const [file, query] = url.split('?');
+    return pathToFileURL(path.resolve(path.dirname(CONFIG_PATH), file)).href + (query ? `?${query}` : '');
   }
   return url;
 }

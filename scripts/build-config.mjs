@@ -6,12 +6,14 @@
 //   --prices  prices CSV (page, product, devices, years, price, original_price, discount).
 //             Default config/marketing/prices.csv
 //   --check   validate only, do not write config/pages.json
+//   --out     write the config to another file instead of config/pages.json
 //
 // The selectors and option controls come from config/layout.json. Accepts ";" or "," separated
 // files, as exported by Excel or Google Sheets. Exits with 1 and lists every problem, with its
 // spreadsheet line number, when the files are not valid.
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
 // What the dome2305 promotion pages offer.
@@ -20,12 +22,13 @@ const DEVICES = [1, 3, 5, 10];
 const YEARS = [1, 2, 3];
 const PRICE_COLUMNS = ['page', 'product', 'devices', 'years', 'price', 'original_price', 'discount'];
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { values: args } = parseArgs({
   options: {
     pages: { type: 'string', default: path.join(root, 'config/marketing/pages.csv') },
     prices: { type: 'string', default: path.join(root, 'config/marketing/prices.csv') },
     check: { type: 'boolean', default: false },
+    out: { type: 'string', default: path.join(root, 'config/pages.json') },
   },
 });
 
@@ -192,6 +195,6 @@ if (args.check) {
   console.log(`Valid: ${pages.length} page(s)\n${summary}`);
 } else {
   const defaults = JSON.parse(fs.readFileSync(path.join(root, 'config/layout.json'), 'utf8'));
-  fs.writeFileSync(path.join(root, 'config/pages.json'), `${JSON.stringify({ defaults, pages }, null, 2)}\n`);
-  console.log(`Generated config/pages.json: ${pages.length} page(s)\n${summary}`);
+  fs.writeFileSync(args.out, `${JSON.stringify({ defaults, pages }, null, 2)}\n`);
+  console.log(`Generated ${path.relative(root, args.out) || args.out}: ${pages.length} page(s)\n${summary}`);
 }
