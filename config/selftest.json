@@ -1,0 +1,27 @@
+{
+  "defaults": {
+    "maxScrolls": 1.5,
+    "minPriceBlocks": 1
+  },
+  "pages": [
+    {
+      "name": "Self-test promo (auto-detected blocks)",
+      "url": "./../tests/fixtures/promo.html",
+      "expectedPriceBlocks": 3,
+      "combinations": [
+        { "block": 1, "price": "19,99 €", "originalPrice": "39,98 €", "discount": "-50%" },
+        { "block": "Advanced", "select": { "devices": "3 dispositivos" }, "price": 39.99, "originalPrice": 79.98 },
+        { "block": "Complete", "select": { "devices": "5 dispositivos", "years": "2 años" }, "price": "119,98 €" }
+      ]
+    },
+    {
+      "name": "Self-test promo (explicit selectors)",
+      "url": "./../tests/fixtures/promo.html",
+      "expectedPriceBlocks": 3,
+      "selectors": { "priceBlock": ".card", "price": ".new", "originalPrice": ".old" },
+      "combinations": [
+        { "block": "Essential", "select": { "devices": "5 dispositivos" }, "price": 39.99, "originalPrice": 79.98 }
+      ]
+    }
+  ]
+}

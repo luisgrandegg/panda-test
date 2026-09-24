@@ -1,0 +1,27 @@
+{
+  "name": "panda-price-blocks",
+  "version": "1.0.0",
+  "description": "Playwright checks for price blocks on promotion pages",
+  "scripts": {
+    "test": "playwright test",
+    "test:desktop": "playwright test --project=desktop",
+    "test:selftest": "PRICE_CONFIG=config/selftest.json playwright test",
+    "discover": "DISCOVER=1 playwright test tests/discover.spec.ts --project=desktop",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luisgrandegg/panda-test.git"
+  },
+  "bugs": {
+    "url": "https://github.com/luisgrandegg/panda-test/issues"
+  },
+  "homepage": "https://github.com/luisgrandegg/panda-test#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^26.6.2",
+    "typescript": "^7.0.2"
+  },
+  "private": true
+}

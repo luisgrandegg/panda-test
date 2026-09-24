@@ -1,0 +1,30 @@
+{
+  "defaults": {
+    "maxScrolls": 1.5,
+    "minPriceBlocks": 3,
+    "cookieAccept": "#onetrust-accept-btn-handler",
+    "selectors": {
+      "priceBlock": ".product-box",
+      "price": ".price-final",
+      "originalPrice": ".price-old"
+    }
+  },
+  "pages": [
+    {
+      "name": "ES promo dome2305 (PPCES)",
+      "url": "https://www.pandasecurity.com/security-promotion/?reg=ES&lang=es&track=99526&campaign=dome2305&recommended=PDP&coupon=PPCES",
+      "expectedPriceBlocks": 3,
+      "combinations": [
+        { "block": 1, "price": "19,99 €", "originalPrice": "39,99 €", "discount": "-50%" },
+        { "block": "Advanced", "select": { "devices": "3 dispositivos" }, "price": 29.99 },
+        { "block": "Complete", "select": { "devices": "5 dispositivos", "years": "2 años" }, "price": "89,99 €" }
+      ]
+    },
+    {
+      "name": "Desktop only, stricter fold",
+      "url": "https://www.pandasecurity.com/security-promotion/?reg=ES&lang=es&campaign=other",
+      "projects": ["desktop"],
+      "maxScrolls": 1
+    }
+  ]
+}

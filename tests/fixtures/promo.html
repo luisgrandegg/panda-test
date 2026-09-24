@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Self-test promo page</title>
+<!-- Local stand-in for a promotion page, used only by `npm run test:selftest`. -->
+<style>
+  body { margin: 0; font-family: sans-serif; }
+  header { height: 70px; background: #111; color: #fff; display: flex; align-items: center; gap: 24px; padding: 0 24px; }
+  header a { color: #fff; }
+  .hero { height: var(--hero, 380px); background: #e6f0ff; padding: 24px; box-sizing: border-box; }
+  .period { text-align: center; padding: 16px; }
+  .period button.active { background: #0a0; color: #fff; }
+  .cards { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; padding: 16px; }
+  .card { border: 1px solid #ccc; border-radius: 8px; padding: 16px; width: 280px; }
+  .old { text-decoration: line-through; color: #888; }
+  .new { font-size: 32px; font-weight: bold; }
+  footer { height: 600px; background: #222; color: #fff; padding: 24px; }
+  #onetrust-banner-sdk { position: fixed; bottom: 0; left: 0; right: 0; background: #333; color: #fff; padding: 16px; z-index: 10; }
+</style>
+</head>
+<body>
+<div id="onetrust-banner-sdk">Usamos cookies <button id="onetrust-accept-btn-handler">Aceptar</button></div>
+<header><strong>Panda Dome</strong><nav><a href="#">Hogar</a> <a href="#">Empresas</a></nav></header>
+<section class="hero"><h1>Protege todos tus dispositivos</h1><p>Hasta 50% de descuento</p></section>
+<div class="period"><button data-years="1" class="active">1 año</button> <button data-years="2">2 años</button></div>
+<section class="cards"></section>
+<footer>Panda Security · Precios con IVA</footer>
+<script>
+  const hero = new URLSearchParams(location.search).get('hero');
+  if (hero) document.documentElement.style.setProperty('--hero', hero + 'px');
+  const products = { Essential: [19.99, 29.99, 39.99], Advanced: [29.99, 39.99, 49.99], Complete: [39.99, 49.99, 59.99] };
+  const devices = [1, 3, 5];
+  let years = 1;
+  const fmt = (n) => n.toFixed(2).replace('.', ',');
+  const cards = document.querySelector('.cards');
+  for (const [name, prices] of Object.entries(products)) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `<h2>Panda Dome ${name}</h2>
+      <select>${devices.map((d, i) => `<option value="${i}">${d} dispositivo${d > 1 ? 's' : ''}</option>`).join('')}</select>
+      <p class="old"></p><p class="new"></p><p class="disc">-50%</p>
+      <a class="buy" href="#">Comprar ahora</a>`;
+    card.render = () => {
+      const price = prices[card.querySelector('select').value] * years;
+      // Split markup, as promo pages often do: 19<sup>,99 €</sup>
+      const [int, dec] = fmt(price).split(',');
+      card.querySelector('.new').innerHTML = `${int}<sup>,${dec} €</sup>`;
+      card.querySelector('.old').textContent = `${fmt(price * 2)} €`;
+    };
+    card.querySelector('select').addEventListener('change', () => setTimeout(card.render, 300));
+    cards.append(card);
+    card.render();
+  }
+  document.querySelectorAll('.period button').forEach((b) => b.addEventListener('click', () => {
+    years = Number(b.dataset.years);
+    document.querySelectorAll('.period button').forEach((x) => x.classList.toggle('active', x === b));
+    document.querySelectorAll('.card').forEach((c) => c.render());
+  }));
+</script>
+</body>
+</html>
