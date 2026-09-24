@@ -3,17 +3,17 @@ name: price-test-runner
 description: Runs the promo page price tests end to end and delivers an executive report with evidence. Checks the setup first (software, config, page access), runs the Playwright suite, then writes a self-contained HTML report with an executive summary, screenshots and every price checked. Use when someone asks to run, execute or check the price tests, verify promo prices, or wants a test report.
 ---
 
-You run the price tests in this repository and turn the result into a report that a marketing lead or manager can read in two minutes. You check and report; you don't fix. Never edit the tests, the CSVs, `config/`, or anything under `src/`, never install software, and never commit.
+You run the price tests in this repository and turn the result into a report that a marketing lead or manager can read in two minutes. You check and report; you don't fix. The only files you write are generated output: `reports/` (your summary and the report) and what the test commands themselves write (`config/pages.json`, `test-results/`, `playwright-report/`). `reports/` and the test output are git-ignored. Never edit the tests, the CSVs, `config/layout.json`, or anything under `src/` or `scripts/`, never install software, and never commit.
 
 Work from the repository root (the folder with `package.json`). Commands work in Git Bash and PowerShell on Windows, and on macOS/Linux.
 
 ## 1. Preflight
 
-Run `npm run preflight`. It prints one line per check (OK / WARN / FAIL), each FAIL with how to fix it, and exits 1 if anything blocks.
+Run `npm run preflight`. It prints one line per check, as `OK`, `WARN` or `FAIL` plus its area, and exits 1 if anything blocks. Each FAIL says how to fix it. Act on the area:
 
-- **Software missing** (Node.js, npm packages, Chromium): stop. Report what's missing and that the **onboarding** skill installs it.
-- **Config invalid:** stop. Report the problems it lists and that the **price-config** skill fixes the spreadsheets.
-- **Pages don't open:** if every page fails, stop. It's almost always internet, VPN or proxy access to pandasecurity.com; say so. If only some pages fail, continue; the report will show those as "could not be checked". Mention it in the summary.
+- **`[software]` FAIL** (Node.js, npm packages, Chromium): stop. Report what's missing and that the **onboarding** skill installs it.
+- **`[config]` FAIL:** stop. Report the problems it lists and that the **price-config** skill fixes the spreadsheets.
+- **`[pages]` FAIL:** if every configured page fails, stop. With a single page, one failure means stop. On a work computer it's almost always internet, VPN or proxy access to pandasecurity.com. On a cloud or CI runner it's usually the runner's network allowlist, which whoever manages that environment has to change. Say which applies, if you can tell. If only some pages fail, continue: the report shows those as "could not be checked". Mention them in the summary.
 
 When preflight stops you, don't run the tests. Return the short "blocked" answer described in step 5.
 
@@ -61,4 +61,11 @@ Report: <artifact link, if published> · <path to report.html>
 Next: <who does what>
 ```
 
-When blocked in preflight, return `Price tests: BLOCKED`, the failing preflight lines, and the fix (onboarding skill, price-config skill, or network access). There's no report in that case.
+When preflight blocks the run, there's no report. Return:
+
+```
+Price tests: BLOCKED — <one-line reason>
+Failing checks:
+  <the FAIL lines from preflight, verbatim>
+Next: <the fix and who does it: onboarding skill, price-config skill, or network access>
+```

@@ -19,12 +19,16 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(path.join(root, 'package.json'));
 const { values: args } = parseArgs({ options: { offline: { type: 'boolean', default: false } } });
 
+// Every line carries its area, [software], [config] or [pages], so readers (and the
+// price-test-runner agent) know who fixes a failure.
 let blocked = false;
-const ok = (msg) => console.log(`  OK    ${msg}`);
-const warn = (msg, fix) => console.log(`  WARN  ${msg}${fix ? `\n        -> ${fix}` : ''}`);
+let area = 'software';
+const line = (tag, msg, fix) => console.log(`  ${tag.padEnd(5)} [${area}] ${msg}${fix ? `\n        -> ${fix}` : ''}`);
+const ok = (msg) => line('OK', msg);
+const warn = (msg, fix) => line('WARN', msg, fix);
 const fail = (msg, fix) => {
   blocked = true;
-  console.log(`  FAIL  ${msg}${fix ? `\n        -> ${fix}` : ''}`);
+  line('FAIL', msg, fix);
 };
 
 console.log('Preflight\n');
@@ -62,6 +66,7 @@ if (playwrightVersion) {
 }
 
 // 4. Config
+area = 'config';
 let pages = [];
 try {
   const out = execFileSync(process.execPath, [path.join(root, 'scripts/build-config.mjs'), '--check'], {
@@ -83,6 +88,7 @@ try {
 }
 
 // 5. Pages reachable in the browser (also proves the browser starts)
+area = 'pages';
 if (args.offline) {
   warn('Page access not checked (--offline)');
 } else if (chromium && pages.length && !blocked) {
@@ -98,7 +104,7 @@ if (args.offline) {
       } catch (e) {
         fail(
           `${name}: cannot open the page (${e.message.split('\n')[0]})`,
-          'Check the internet connection, VPN/proxy, or the url in pages.csv',
+          'Check the internet connection and VPN/proxy (on a cloud runner: its network allowlist), or the url in pages.csv',
         );
       }
     }
