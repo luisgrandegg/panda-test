@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Self-test dome2305 page</title>
+<!--
+  Trimmed copy of the dome2305 promotion page layout, used only by `npm run test:selftest`.
+  Same ids, classes and breakpoint as the real page; the prices beyond 1 device / 1 year are made up.
+-->
+<style>
+  * { margin: 0; padding: 0; }
+  body { font-family: sans-serif; }
+  header { height: 64px; background: #111; }
+  .title_desktop { height: 330px; padding: 24px; }
+  .title_mobile { display: none; padding: 16px; }
+  #selector_area { display: flex; gap: 48px; justify-content: center; padding: 16px 0; margin: 0 auto 24px; }
+  #devices_number button, #duration_number button { min-width: 40px; height: 40px; }
+  #devices_number .selected, #duration_number .selected { background: #2C85D5; color: #fff; }
+  #hero_cards_desktop { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; padding: 100px 36px 0; }
+  #hero_cards_mobile { display: none; padding: 16px; }
+  .hero_card, .hero_card_mobile { position: relative; padding: 16px; box-shadow: 0 0 10px #ccc; margin-bottom: 40px; }
+  .save { position: absolute; top: -40px; left: 0; right: 0; text-align: center; background: #D9EDE4; }
+  .precio_antes { text-decoration: line-through; text-align: center; }
+  .precio_despues { font-size: 30px; font-weight: bold; text-align: center; }
+  .features li { margin-bottom: 8px; }
+  #tabla { height: 900px; background: #f5f5f5; padding: 24px; }
+  #teaser_modal_pde { display: none; }
+  @media screen and (max-width: 1199px) {
+    .title_desktop, #selector_area, #hero_cards_desktop { display: none; }
+    .title_mobile { display: block; }
+    #hero_cards_mobile { display: block; margin-top: 72px; }
+    #hero_cards_mobile select { display: block; width: 100%; height: 40px; margin-bottom: 8px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <div id="teaser_modal_pde" class="teaser_modal"><p class="precio_despues">9,99 €</p><a href="#">Comprar Essential ahora</a></div>
+  <header></header>
+  <div id="hero">
+    <div class="title_desktop"><h1>Suite de Seguridad Panda Dome</h1></div>
+    <div class="title_mobile"><h1>Suite de Seguridad Panda Dome</h1></div>
+    <div id="selector_area">
+      <div class="selector"><p class="selectortitle">¿Cuántos dispositivos quieres proteger?</p>
+        <div id="devices_number"><button value="1" class="selected">1</button><button value="3">3</button><button value="5">5</button><button value="10">10</button></div>
+      </div>
+      <div class="selector">
+        <div id="duration_number"><button value="1" class="selected">1 año</button><button value="2">2 años</button><button value="3">3 años</button></div>
+      </div>
+    </div>
+    <div id="hero_cards_desktop"></div>
+    <div id="hero_cards_mobile"></div>
+  </div>
+  <section id="tabla"><h3>Elije el plan</h3>
+    <select class="licenseNumberPDE"><option value="1">1 dispositivo</option><option value="3">3 dispositivos</option></select>
+    <p class="precio_despues">27,96 €</p><a href="#">Comprar</a>
+  </section>
+</main>
+<script>
+  // [code, name, discount, { "devices-years": [before, after] }]
+  const products = [
+    ['PDE', 'Essential', '-30%', { '1-1': ['39,95 €', '27,96 €'], '3-1': ['49,95 €', '34,96 €'], '3-2': ['99,90 €', '69,93 €'] }],
+    ['PDA', 'Advanced', '-30%', { '1-1': ['54,95 €', '38,46 €'], '5-1': ['74,95 €', '52,46 €'] }],
+    ['PDC', 'Complete', '-45%', { '1-1': ['84,95 €', '46,72 €'], '10-3': ['299,85 €', '164,91 €'] }],
+    ['PDP', 'Premium', '-60%', { '1-1': ['139,95 €', '55,98 €'], '10-1': ['199,95 €', '59,98 €'] }],
+  ];
+  const state = {}; // per product: { devices, years }
+  const opts = (values, one, many) => values.map((v) => `<option value="${v}">${v} ${v > 1 ? many : one}</option>`).join('');
+  const card = (cls, [code, name, dto]) => `
+    <div class="${cls} ${cls}_${code.toLowerCase()}" data-code="${code}">
+      <p class="save"><span class="dtoSave">${dto}</span> de descuento</p>
+      <div class="product_box">${name}</div>
+      ${cls === 'hero_card_mobile' ? `<select class="licenseNumber${code}">${opts([1, 3, 5, 10], 'dispositivo', 'dispositivos')}</select>
+        <select class="licenseLenght${code}">${opts([1, 2, 3], 'año', 'años')}</select>` : ''}
+      <div class="prices"><p class="precio_antes"></p><p class="precio_despues"></p></div>
+      <div class="buttons_area"><a class="card_button" href="#">Comprar ahora</a></div>
+      <div class="features"><ul><li>Antivirus y firewall</li><li>Protección Wi-Fi</li><li>Compras online seguras</li></ul></div>
+    </div>`;
+  document.getElementById('hero_cards_desktop').innerHTML = products.map((p) => card('hero_card', p)).join('');
+  document.getElementById('hero_cards_mobile').innerHTML = products.map((p) => card('hero_card_mobile', p)).join('');
+
+  function render() {
+    for (const [code, , , prices] of products) {
+      const { devices, years } = state[code];
+      const [before, after] = prices[`${devices}-${years}`] ?? ['—', '—'];
+      document.querySelectorAll(`[data-code="${code}"]`).forEach((c) => {
+        c.querySelector('.precio_antes').textContent = before;
+        c.querySelector('.precio_despues').textContent = after;
+        const n = c.querySelector('select[class^="licenseNumber"]');
+        const y = c.querySelector('select[class^="licenseLenght"]');
+        if (n) n.value = devices;
+        if (y) y.value = years;
+      });
+    }
+  }
+  products.forEach(([code]) => (state[code] = { devices: '1', years: '1' }));
+  render();
+
+  // Desktop: the shared buttons change every card, after a short delay like an ajax call.
+  for (const [id, key] of [['devices_number', 'devices'], ['duration_number', 'years']]) {
+    document.querySelectorAll(`#${id} button`).forEach((b) => b.addEventListener('click', () => {
+      document.querySelectorAll(`#${id} button`).forEach((x) => x.classList.toggle('selected', x === b));
+      products.forEach(([code]) => (state[code][key] = b.value));
+      setTimeout(render, 200);
+    }));
+  }
+  // Mobile: each card's selects change that card only.
+  document.querySelectorAll('#hero_cards_mobile select').forEach((s) => s.addEventListener('change', () => {
+    const code = s.closest('[data-code]').dataset.code;
+    state[code][s.className.startsWith('licenseNumber') ? 'devices' : 'years'] = s.value;
+    setTimeout(render, 200);
+  }));
+</script>
+</body>
+</html>

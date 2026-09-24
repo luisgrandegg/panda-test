@@ -190,12 +190,47 @@ async function clickOrSelect(scope: Locator | Page, step: string): Promise<boole
   return false;
 }
 
+/** Clicks the control, or picks `value` in it when it is a <select>. False if the select lacks it. */
+async function useControl(control: Locator, value: string): Promise<boolean> {
+  if ((await control.evaluate((el) => el.tagName)) !== 'SELECT') {
+    await control.click();
+    return true;
+  }
+  const options = await control.locator('option').evaluateAll((opts) =>
+    opts.map((o) => ({ value: (o as HTMLOptionElement).value, label: o.textContent!.trim() })),
+  );
+  const wanted = value.toLowerCase();
+  const match =
+    options.find((o) => o.value.toLowerCase() === wanted || o.label.toLowerCase() === wanted) ??
+    options.find((o) => o.label.toLowerCase().startsWith(wanted));
+  if (!match) return false;
+  await control.selectOption({ value: match.value });
+  return true;
+}
+
 /**
- * Chooses an option ("3 dispositivos", "2 años", "Dispositivos > 5") by looking inside the block
- * first and then on the whole page, for controls shared by every block such as a period toggle.
- * Returns false when a step could not be found.
+ * Sets one option of a combination. With configured controls for `key`, uses the first visible
+ * one (inside the block, then on the page). Otherwise looks for "3 dispositivos", "2 años" or
+ * "Dispositivos > 5" as a <select> option or clickable text, inside the block then on the page.
+ * Returns false when nothing matched.
  */
-export async function chooseOption(page: Page, block: Locator, value: string): Promise<boolean> {
+export async function chooseOption(
+  page: Page,
+  block: Locator,
+  key: string,
+  value: string,
+  controls: Record<string, string[]>,
+): Promise<boolean> {
+  const candidates = controls[key];
+  if (candidates) {
+    for (const scope of [block, page]) {
+      for (const sel of candidates) {
+        const control = scope.locator(sel.replaceAll('{value}', value)).filter({ visible: true }).first();
+        if ((await control.count()) && (await useControl(control, value))) return true;
+      }
+    }
+    return false;
+  }
   for (const step of value.split(' > ')) {
     if (!(await clickOrSelect(block, step)) && !(await clickOrSelect(page, step))) return false;
   }

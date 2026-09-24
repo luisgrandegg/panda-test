@@ -70,9 +70,9 @@ for (const cfg of loadConfig()) {
             if (!(await block.isVisible())) return;
 
             const missing: string[] = [];
-            for (const value of Object.values(combo.select ?? {})) {
+            for (const [key, value] of Object.entries(combo.select ?? {})) {
               if (!(await block.count())) await tagPriceBlocks(page, cfg.selectors.priceBlock);
-              if (!(await chooseOption(page, block, value))) missing.push(value);
+              if (!(await chooseOption(page, block, key, String(value), cfg.options))) missing.push(`${key}=${value}`);
             }
             soft(missing, 'options not found on the page').toEqual([]);
             if (missing.length) return;

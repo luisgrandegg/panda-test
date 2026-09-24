@@ -22,6 +22,15 @@ export interface PageSettings {
   /** Cookie banner "accept" button(s). `false` disables cookie handling. */
   cookieAccept?: string | string[] | false;
   selectors?: Selectors;
+  /**
+   * How to set each option used in `combinations[].select`, e.g.
+   * { "devices": ["#devices_number button[value='{value}']", "select.licenseNumber"] }.
+   * Candidates are tried in order, inside the block first and then on the whole page; the first
+   * visible one is used. A <select> gets the option whose value or label matches; anything else is
+   * clicked. `{value}` is replaced with the wanted value. Options without an entry are looked up
+   * by their text instead.
+   */
+  options?: Record<string, string | string[]>;
   /** Only run this page on these Playwright projects (e.g. ["desktop"]). Default: all. */
   projects?: string[];
 }
@@ -30,12 +39,12 @@ export interface PriceCombination {
   /** Which block: 1-based index, or text found in the block (e.g. the product name). */
   block: number | string;
   /**
-   * Options to choose before reading the price, e.g. { "devices": "3 dispositivos", "years": "1 año" }.
-   * The keys only label the report. Each value is looked for as a <select> option,
-   * then as clickable text, first inside the block and then on the whole page.
-   * Use "A > B" to click A and then B, for custom dropdowns.
+   * Options to choose before reading the price, e.g. { "devices": 3, "years": 1 }.
+   * Keys with an entry in `options` use those controls. For other keys the value is looked for as
+   * a <select> option, then as clickable text, inside the block first and then on the whole page;
+   * "A > B" clicks A and then B, for custom dropdowns.
    */
-  select?: Record<string, string>;
+  select?: Record<string, string | number>;
   /** Expected current price, e.g. 19.99 or "19,99 €". */
   price: number | string;
   /** Expected original / crossed-out price. */
@@ -60,6 +69,7 @@ export interface ResolvedPage extends PageConfig {
   minPriceBlocks: number;
   cookieAccept: string[];
   selectors: Selectors;
+  options: Record<string, string[]>;
   combinations: PriceCombination[];
 }
 
@@ -110,6 +120,9 @@ export function loadConfig(): ResolvedPage[] {
       expectedPriceBlocks: p.expectedPriceBlocks ?? d.expectedPriceBlocks,
       cookieAccept: cookie === false ? [] : cookie === undefined ? DEFAULT_COOKIE_ACCEPT : [cookie].flat(),
       selectors: { ...d.selectors, ...p.selectors },
+      options: Object.fromEntries(
+        Object.entries({ ...d.options, ...p.options }).map(([k, v]) => [k, [v].flat()]),
+      ),
       projects: p.projects ?? d.projects,
       combinations: p.combinations ?? [],
     };

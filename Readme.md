@@ -28,29 +28,33 @@ npm run report                  # open the HTML report (screenshots, traces)
 
 ## Config
 
-`config/pages.json`. See `config/pages.example.json` for a fuller example.
+`config/pages.json` holds the pages to test. The `defaults` block describes the dome2305 layout, which all promo pages share, so a new page usually needs only a `name`, a `url` and its `combinations`. Any page can override any default. `config/pages.example.json` shows more options.
 
 ```jsonc
 {
-  "defaults": {                       // applies to every page; any page can override it
+  "defaults": {
     "maxScrolls": 1.5,
-    "minPriceBlocks": 1,
-    "cookieAccept": "#onetrust-accept-btn-handler",   // or false; common banners are tried by default
-    "selectors": {                    // all optional, see "How blocks are found"
-      "priceBlock": ".product-box",
-      "price": ".price-final",
-      "originalPrice": ".price-old"
+    "expectedPriceBlocks": 4,           // or "minPriceBlocks"
+    "selectors": {
+      // Desktop (>=1200px) and mobile cards; only the visible set counts.
+      "priceBlock": "#hero_cards_desktop .hero_card, #hero_cards_mobile .hero_card_mobile",
+      "price": ".prices .precio_despues",
+      "originalPrice": ".prices .precio_antes"
+    },
+    "options": {
+      // Desktop: shared buttons above the cards. Mobile: a <select> inside each card.
+      "devices": ["#devices_number button[value='{value}']", "select[class*='licenseNumber']"],
+      "years": ["#duration_number button[value='{value}']", "select[class*='licenseLenght']"]
     }
   },
   "pages": [
     {
-      "name": "ES promo",
+      "name": "ES promo dome2305 (PPCES)",
       "url": "https://www.pandasecurity.com/security-promotion/?reg=ES&lang=es&...",
-      "expectedPriceBlocks": 3,
-      "projects": ["desktop"],        // optional: run on desktop only
+      "projects": ["desktop"],          // optional: desktop only
       "combinations": [
-        { "block": 1, "price": "19,99 €", "originalPrice": "39,99 €", "discount": "-50%" },
-        { "block": "Advanced", "select": { "devices": "3 dispositivos", "years": "2 años" }, "price": 49.99 }
+        { "block": "Essential", "select": { "devices": 1, "years": 1 }, "price": "27,96 €", "originalPrice": "39,95 €", "discount": "-30%" },
+        { "block": "Premium", "select": { "devices": 10, "years": 2 }, "price": 99.99 }
       ]
     }
   ]
@@ -61,19 +65,22 @@ Combination fields:
 
 | field | meaning |
 |---|---|
-| `block` | 1-based block number, or text in the block (e.g. the product name). |
-| `select` | Options to choose first. The keys are only labels. Each value is looked for as a `<select>` option, then as clickable text; first inside the block, then on the whole page (for toggles shared by all blocks). Use `"Devices > 5"` to click through a custom dropdown. |
+| `block` | Product name as shown on the card (`"Essential"`, `"Advanced"`, `"Complete"`, `"Premium"`), or a 1-based position. |
+| `select` | Options to set first. Keys match `options`; values are the button / `<select>` values (`1`, `3`, `5`, `10` devices; `1`, `2`, `3` years). Options carry over to the next combination, so list every option in each combination. |
 | `price` | Expected current price: `19.99`, `"19,99 €"` or `"€19.99"`. |
 | `originalPrice` | Expected crossed-out price (optional). |
-| `discount` | Text the block must contain, e.g. `"-50%"` (optional). |
+| `discount` | Text the card must contain, e.g. `"-30%"` (optional). |
+
+### Option controls
+
+Each entry in `options` lists candidate selectors, tried in order: inside the card first, then on the whole page. The first visible one wins. `{value}` is replaced with the wanted value. For a `<select>`, the option is matched by value or label; anything else is clicked. That's how one combination works on both layouts. On desktop the `#devices_number` button is visible and gets clicked; on mobile the buttons are hidden, so the card's own `licenseNumber…` dropdown is used.
+
+An option with no entry in `options` is looked up by its text instead (e.g. `"3 dispositivos"`), as a `<select>` option or clickable text. Use `"A > B"` to click through a custom dropdown.
 
 ## How blocks are found
 
-With no `selectors`, the suite finds blocks on its own. A block is the container around a price (a number next to €, $ or £) that also has a call to action (a buy button or link), widened to the whole card. Prices split across elements, like `19<sup>,99 €</sup>`, are read correctly.
+With `selectors.priceBlock`, the blocks are the **visible** elements it matches. Without it, the suite guesses: a block is the container around a price (a number next to €, $ or £) that also has a call to action, widened to the whole card. `npm run discover` prints what was found on each page (tag, classes, prices, `<select>` options, text) and attaches a full-page screenshot with the blocks outlined in red to the HTML report.
 
-Detection is a heuristic, so once you know the page markup, set the selectors:
+## Self-test
 
-- `priceBlock`: when detection picks up something extra (such as a "desde 19,99 €" banner with a button) or misses a card.
-- `price` / `originalPrice`: without them, `price` passes if the value appears **anywhere** in the block, so it can match the crossed-out price. With them, each value is read from its own element.
-
-`npm run discover` prints what was found on each page (tag, classes, prices, `<select>` options, text) and attaches a full-page screenshot with the blocks outlined in red to the HTML report.
+`npm run test:selftest` runs the suite against local pages in `tests/fixtures/`. `dome2305.html` is a trimmed copy of the real layout (same ids, classes and 1200px breakpoint), tested with the same `defaults` as `pages.json`. `generic.html` covers auto-detection. Only the 1 device / 1 year prices in the fixture are real.

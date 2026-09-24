@@ -5,22 +5,150 @@
   },
   "pages": [
     {
+      "name": "Self-test dome2305 layout (same selectors as pages.json)",
+      "url": "./../tests/fixtures/dome2305.html",
+      "maxScrolls": 1.5,
+      "expectedPriceBlocks": 4,
+      "selectors": {
+        "priceBlock": "#hero_cards_desktop .hero_card, #hero_cards_mobile .hero_card_mobile",
+        "price": ".prices .precio_despues",
+        "originalPrice": ".prices .precio_antes"
+      },
+      "options": {
+        "devices": [
+          "#devices_number button[value='{value}']",
+          "select[class*='licenseNumber']"
+        ],
+        "years": [
+          "#duration_number button[value='{value}']",
+          "select[class*='licenseLenght']"
+        ]
+      },
+      "combinations": [
+        {
+          "block": "Essential",
+          "select": {
+            "devices": 1,
+            "years": 1
+          },
+          "price": "27,96 €",
+          "originalPrice": "39,95 €",
+          "discount": "-30%"
+        },
+        {
+          "block": "Advanced",
+          "select": {
+            "devices": 1,
+            "years": 1
+          },
+          "price": "38,46 €",
+          "originalPrice": "54,95 €",
+          "discount": "-30%"
+        },
+        {
+          "block": "Complete",
+          "select": {
+            "devices": 1,
+            "years": 1
+          },
+          "price": "46,72 €",
+          "originalPrice": "84,95 €",
+          "discount": "-45%"
+        },
+        {
+          "block": "Premium",
+          "select": {
+            "devices": 1,
+            "years": 1
+          },
+          "price": "55,98 €",
+          "originalPrice": "139,95 €",
+          "discount": "-60%"
+        },
+        {
+          "block": "Essential",
+          "select": {
+            "devices": 3,
+            "years": 2
+          },
+          "price": "69,93 €",
+          "originalPrice": "99,90 €"
+        },
+        {
+          "block": "Advanced",
+          "select": {
+            "devices": 5,
+            "years": 1
+          },
+          "price": 52.46
+        },
+        {
+          "block": "Complete",
+          "select": {
+            "devices": 10,
+            "years": 3
+          },
+          "price": "164,91 €",
+          "originalPrice": "299,85 €"
+        },
+        {
+          "block": "Premium",
+          "select": {
+            "devices": 10,
+            "years": 1
+          },
+          "price": "59,98 €",
+          "discount": "-60%"
+        }
+      ]
+    },
+    {
       "name": "Self-test promo (auto-detected blocks)",
-      "url": "./../tests/fixtures/promo.html",
+      "url": "./../tests/fixtures/generic.html",
       "expectedPriceBlocks": 3,
       "combinations": [
-        { "block": 1, "price": "19,99 €", "originalPrice": "39,98 €", "discount": "-50%" },
-        { "block": "Advanced", "select": { "devices": "3 dispositivos" }, "price": 39.99, "originalPrice": 79.98 },
-        { "block": "Complete", "select": { "devices": "5 dispositivos", "years": "2 años" }, "price": "119,98 €" }
+        {
+          "block": 1,
+          "price": "19,99 €",
+          "originalPrice": "39,98 €",
+          "discount": "-50%"
+        },
+        {
+          "block": "Advanced",
+          "select": {
+            "devices": "3 dispositivos"
+          },
+          "price": 39.99,
+          "originalPrice": 79.98
+        },
+        {
+          "block": "Complete",
+          "select": {
+            "devices": "5 dispositivos",
+            "years": "2 años"
+          },
+          "price": "119,98 €"
+        }
       ]
     },
     {
       "name": "Self-test promo (explicit selectors)",
-      "url": "./../tests/fixtures/promo.html",
+      "url": "./../tests/fixtures/generic.html",
       "expectedPriceBlocks": 3,
-      "selectors": { "priceBlock": ".card", "price": ".new", "originalPrice": ".old" },
+      "selectors": {
+        "priceBlock": ".card",
+        "price": ".new",
+        "originalPrice": ".old"
+      },
       "combinations": [
-        { "block": "Essential", "select": { "devices": "5 dispositivos" }, "price": 39.99, "originalPrice": 79.98 }
+        {
+          "block": "Essential",
+          "select": {
+            "devices": "5 dispositivos"
+          },
+          "price": 39.99,
+          "originalPrice": 79.98
+        }
       ]
     }
   ]
