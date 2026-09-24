@@ -8,19 +8,63 @@
       "originalPrice": ".prices .precio_antes"
     },
     "options": {
-      "devices": ["#devices_number button[value='{value}']", "select[class*='licenseNumber']"],
-      "years": ["#duration_number button[value='{value}']", "select[class*='licenseLenght']"]
+      "devices": [
+        "#devices_number button[value='{value}']",
+        "select[class*='licenseNumber']"
+      ],
+      "years": [
+        "#duration_number button[value='{value}']",
+        "select[class*='licenseLenght']"
+      ]
     }
   },
   "pages": [
     {
       "name": "ES promo dome2305 (PPCES)",
       "url": "https://www.pandasecurity.com/security-promotion/?reg=ES&lang=es&track=99526&campaign=dome2305&recommended=PDP&coupon=PPCES",
+      "expectedPriceBlocks": 4,
+      "maxScrolls": 1.5,
       "combinations": [
-        { "block": "Essential", "select": { "devices": 1, "years": 1 }, "price": "27,96 €", "originalPrice": "39,95 €", "discount": "-30%" },
-        { "block": "Advanced", "select": { "devices": 1, "years": 1 }, "price": "38,46 €", "originalPrice": "54,95 €", "discount": "-30%" },
-        { "block": "Complete", "select": { "devices": 1, "years": 1 }, "price": "46,72 €", "originalPrice": "84,95 €", "discount": "-45%" },
-        { "block": "Premium", "select": { "devices": 1, "years": 1 }, "price": "55,98 €", "originalPrice": "139,95 €", "discount": "-60%" }
+        {
+          "block": "Essential",
+          "select": {
+            "devices": 1,
+            "years": 1
+          },
+          "price": "27,96 €",
+          "originalPrice": "39,95 €",
+          "discount": "-30%"
+        },
+        {
+          "block": "Advanced",
+          "select": {
+            "devices": 1,
+            "years": 1
+          },
+          "price": "38,46 €",
+          "originalPrice": "54,95 €",
+          "discount": "-30%"
+        },
+        {
+          "block": "Complete",
+          "select": {
+            "devices": 1,
+            "years": 1
+          },
+          "price": "46,72 €",
+          "originalPrice": "84,95 €",
+          "discount": "-45%"
+        },
+        {
+          "block": "Premium",
+          "select": {
+            "devices": 1,
+            "years": 1
+          },
+          "price": "55,98 €",
+          "originalPrice": "139,95 €",
+          "discount": "-60%"
+        }
       ]
     }
   ]

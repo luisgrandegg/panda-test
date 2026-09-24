@@ -18,9 +18,10 @@ npx playwright install chromium
 ## Running
 
 ```bash
-npm test                        # config/pages.json, desktop + mobile
+npm run config                  # build config/pages.json from the marketing CSVs
+npm test                        # build the config, then test desktop + mobile
 npm run test:desktop            # desktop only
-PRICE_CONFIG=config/other.json npm test   # another config file
+PRICE_CONFIG=config/other.json npx playwright test   # a hand-written config
 npm run discover                # list the blocks found on each page (checks nothing)
 npm run test:selftest           # run the suite against the local fixture page
 npm run report                  # open the HTML report (screenshots, traces)
@@ -28,7 +29,9 @@ npm run report                  # open the HTML report (screenshots, traces)
 
 ## Config
 
-`config/pages.json` holds the pages to test. The `defaults` block describes the dome2305 layout, which all promo pages share, so a new page usually needs only a `name`, a `url` and its `combinations`. Any page can override any default. `config/pages.example.json` shows more options.
+Pages and prices come from two spreadsheets that the marketing team fills in: `config/marketing/pages.csv` and `config/marketing/prices.csv` (see [config/marketing/README.md](config/marketing/README.md)). `npm run config` checks them and generates `config/pages.json`; `npm test` runs it first. So edit the CSVs, not `pages.json`.
+
+The page layout shared by all promo pages (selectors, option controls) is in `config/layout.json` and becomes the `defaults` block below. To use extra settings the spreadsheets don't cover, write a JSON config by hand and run it with `PRICE_CONFIG=config/my.json npx playwright test`. `config/pages.example.json` shows more options.
 
 ```jsonc
 {

@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "Playwright checks for price blocks on promotion pages",
   "scripts": {
+    "config": "node scripts/build-config.mjs",
+    "pretest": "npm run config",
     "test": "playwright test",
-    "test:desktop": "playwright test --project=desktop",
+    "test:desktop": "npm run config && playwright test --project=desktop",
     "test:selftest": "PRICE_CONFIG=config/selftest.json playwright test",
     "discover": "DISCOVER=1 playwright test tests/discover.spec.ts --project=desktop",
     "report": "playwright show-report",

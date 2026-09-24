@@ -1,0 +1,19 @@
+{
+  "maxScrolls": 1.5,
+  "expectedPriceBlocks": 4,
+  "selectors": {
+    "priceBlock": "#hero_cards_desktop .hero_card, #hero_cards_mobile .hero_card_mobile",
+    "price": ".prices .precio_despues",
+    "originalPrice": ".prices .precio_antes"
+  },
+  "options": {
+    "devices": [
+      "#devices_number button[value='{value}']",
+      "select[class*='licenseNumber']"
+    ],
+    "years": [
+      "#duration_number button[value='{value}']",
+      "select[class*='licenseLenght']"
+    ]
+  }
+}
