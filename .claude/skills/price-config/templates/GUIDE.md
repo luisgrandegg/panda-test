@@ -1,6 +1,6 @@
 # Price test spreadsheets
 
-The automated tests open every page listed here and check its prices. Fill in both files and send them back, or edit them in Excel / Google Sheets and export as CSV with the same names. Separating columns with `;` or `,` both work.
+The automated tests open every page listed in `pages.csv` and check the prices listed in `prices.csv`. Fill both in with Excel or Google Sheets and save/export them as CSV (columns separated by `;` or `,`, both work). Keep the header row as it is. Then ask Claude to "generate the price config" and give it the location of the files.
 
 ## pages.csv: one row per landing page
 
@@ -31,8 +31,6 @@ Prioritize if the full list is too long (4 products × 4 device options × 3 dur
 - whatever the campaign advertises (e.g. Premium 10 devices)
 - one 2- or 3-year option per product
 
-## Also tell us
+## Keep them up to date
 
-- When each promotion starts and ends, and before prices or coupons change. Otherwise the tests fail on every campaign change.
-- Whether the discount label changes with devices/years, or is always the same for a product.
-- Whether the Premium 10-device 70% offer box (coupon `PPCALL`) should also be checked.
+Update the files, and generate the config again, whenever a promotion starts, ends or changes its prices or coupon. Otherwise the tests fail even though the page is right.

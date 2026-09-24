@@ -19,6 +19,7 @@ npx playwright install chromium
 
 ```bash
 npm run config                  # build config/pages.json from the marketing CSVs
+node scripts/build-config.mjs --pages a.csv --prices b.csv --check   # validate other CSVs
 npm test                        # build the config, then test desktop + mobile
 npm run test:desktop            # desktop only
 PRICE_CONFIG=config/other.json npx playwright test   # a hand-written config
@@ -29,7 +30,7 @@ npm run report                  # open the HTML report (screenshots, traces)
 
 ## Config
 
-Pages and prices come from two spreadsheets that the marketing team fills in: `config/marketing/pages.csv` and `config/marketing/prices.csv` (see [config/marketing/README.md](config/marketing/README.md)). `npm run config` checks them and generates `config/pages.json`; `npm test` runs it first. So edit the CSVs, not `pages.json`.
+Pages and prices come from two spreadsheets that the marketing team fills in: `config/marketing/pages.csv` and `config/marketing/prices.csv` (column guide: [GUIDE.md](.claude/skills/price-config/templates/GUIDE.md)). In Claude Code, the `/price-config` skill walks through it: it hands out blank templates, or validates your CSVs and generates the config. `npm run config` checks them and generates `config/pages.json`; `npm test` runs it first. So edit the CSVs, not `pages.json`.
 
 The page layout shared by all promo pages (selectors, option controls) is in `config/layout.json` and becomes the `defaults` block below. To use extra settings the spreadsheets don't cover, write a JSON config by hand and run it with `PRICE_CONFIG=config/my.json npx playwright test`. `config/pages.example.json` shows more options.
 
